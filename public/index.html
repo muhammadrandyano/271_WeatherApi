@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWS Location Search</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 450px;
+            padding: 30px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .header-title {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #1e293b;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .divider {
+            height: 2px;
+            background-color: #334155;
+            margin-bottom: 25px;
+        }
+        .student-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        .student-id {
+            font-size: 16px;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 25px;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #94a3b8;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+        .search-box button {
+            background-color: #1e293b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .search-box button:hover {
+            background-color: #334155;
+        }
+        .result-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            background-color: #fafafa;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-size: 12px;
+            font-weight: 800;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-title">PWS 29 SEP 2026</div>
+        <div class="divider"></div>
+
+        <div class="student-name">Muhammad Randyano</div>
+        <div class="student-id">20240140271</div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Masukkan nama kota..." value="Bandung">
+            <button onclick="cariLokasi()">Search</button>
+        </div>
+
+        <div class="result-card">
+            <div class="info-row">
+                <span class="label">PLACE NAME</span>
+                <span class="value" id="placeName">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">MATCHING TEXT</span>
+                <span class="value" id="matchingText">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">TIPE</span>
+                <span class="value" id="tipe">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">KOORDINAT</span>
+                <span class="value" id="koordinat">-</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function cariLokasi() {
+            const query = document.getElementById("searchInput").value.trim();
+            if (!query) return;
+
+            try {
+                const response = await fetch(`/api/lokasi?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById("placeName").innerText = data.place_name;
+                    document.getElementById("matchingText").innerText = data.matching_text;
+                    document.getElementById("tipe").innerText = data.tipe;
+                    document.getElementById("koordinat").innerText = data.koordinat.join(", ");
+                } else {
+                    alert(data.message || "Gagal memuat data");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Terjadi kesalahan koneksi ke server");
+            }
+        }
+
+        // Jalankan pencarian default saat halaman dimuat
+        window.onload = cariLokasi;
+    </script>
+</body>
+</html>
